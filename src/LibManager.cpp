@@ -73,7 +73,7 @@ LibManager::~LibManager() {
     std::map<std::string, libStruct>::iterator it;
     clearLibraries();
 
-    if(libMap.size() > 0) {
+    if(!libMap.empty()) {
         for(it = libMap.begin(); it != libMap.end(); ++it) {
             fprintf(stderr, "LibManager: [%s] not deleted correctly! "
                 "%d references remain.\n"

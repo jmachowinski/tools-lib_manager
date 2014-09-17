@@ -275,13 +275,19 @@ LibInterface* LibManager::acquireLibrary(const string &libName) {
  * @param libName
  * @return 
  */
-LibManager::ErrorNumber LibManager::releaseLibrary(const string &libName) {
+LibManager::ErrorNumber LibManager::releaseLibrary(const string &libName) 
+{
     if(libMap.find(libName) == libMap.end()) {
         return LIBMGR_ERR_NO_LIBRARY;
     }
+    
     libStruct *theLib = &(libMap[libName]);
     theLib->useCount--;
-    if(theLib->useCount <= 0 && theLib->wasUnloaded) {
+    if(theLib->useCount < 0)
+    {
+        throw std::runtime_error("Internal error, use count is below zero !");
+    }
+    if(theLib->useCount == 0 && !theLib->wasUnloaded) {
         unloadLibrary(libName);
     }
     return LIBMGR_NO_ERROR;
@@ -290,14 +296,19 @@ LibManager::ErrorNumber LibManager::releaseLibrary(const string &libName) {
 /**
  * This method is not to be directly called. Use releaseLibrary() instead.
  */
-LibManager::ErrorNumber LibManager::unloadLibrary(const string &libName) {
+LibManager::ErrorNumber LibManager::unloadLibrary(const string &libName) 
+{
     if(libMap.find(libName) == libMap.end()) {
         return LIBMGR_ERR_NO_LIBRARY;
     }
     
     libStruct *theLib = &(libMap[libName]);
-    theLib->wasUnloaded = true;
-    if(theLib->useCount <= 0) {
+    if(theLib->useCount < 0)
+    {
+        throw std::runtime_error("Internal error, use count is below zero !");
+    }
+    if(theLib->useCount == 0) {
+        theLib->wasUnloaded = true;
         fprintf(stderr, "LibManager: unload delete [%s]\n", libName.c_str());
         if(theLib->destroy) {
             theLib->destroy(theLib->libInterface);

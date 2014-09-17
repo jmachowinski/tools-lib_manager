@@ -42,14 +42,13 @@
  *       classes constructor!
  */
 
-namespace mars {
-    namespace lib_manager {
-        class LibInterface;
-        class LibManager;
-    }
+namespace lib_manager {
+    class LibInterface;
+    class LibManager;
 }
 
-extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManager *theManager);
+
+extern "C" lib_manager::LibInterface* create_c(lib_manager::LibManager *theManager);
 
 #ifdef GIT_INFO
 #define EXPAND_STRING(x) #x
@@ -62,25 +61,25 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
 #endif
 
 #define DESTROY_LIB(theClass)                                           \
-  extern "C" void *destroy_c(mars::lib_manager::LibInterface *sp) {     \
+  extern "C" void *destroy_c(lib_manager::LibInterface *sp) {     \
     delete (dynamic_cast<theClass*>(sp));                               \
     return 0;                                                           \
   }
 
 #define CREATE_LIB(theClass)                                            \
-  extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManager *theManager) { \
+  extern "C" lib_manager::LibInterface* create_c(lib_manager::LibManager *theManager) { \
     theClass *instance = new theClass(theManager);                      \
     instance->createModuleInfo();                                       \
-    return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
+    return dynamic_cast<lib_manager::LibInterface*>(instance);    \
   }
 
 #define CREATE_LIB_CONFIG(theClass, configType)                         \
-  extern "C" mars::lib_manager::LibInterface* config_create_c(mars::lib_manager::LibManager *theManager, configType *config) { \
+  extern "C" lib_manager::LibInterface* config_create_c(lib_manager::LibManager *theManager, configType *config) { \
     configType *_config = dynamic_cast<configType*>(config);            \
     if(_config == NULL) return 0;                                       \
     theClass *instance = new theClass(theManager, _config);             \
     instance->createModuleInfo();                                       \
-    return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
+    return dynamic_cast<lib_manager::LibInterface*>(instance);    \
   }
 
 #define CREATE_MODULE_INFO()                                            \

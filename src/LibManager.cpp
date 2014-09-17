@@ -325,8 +325,10 @@ LibManager::ErrorNumber LibManager::unloadLibrary(const string &libName)
  * a maximum length of 255 characters.
  * @param config_file
  */
-void LibManager::loadConfigFile(const std::string &config_file) {
-    char plugin_chars[255];
+void LibManager::loadConfigFile(const std::string &config_file) 
+{
+    const size_t maxChars = 255;
+    char plugin_chars[maxChars];
     std::string plugin_path;
     FILE *plugin_config;
     
@@ -338,7 +340,7 @@ void LibManager::loadConfigFile(const std::string &config_file) {
     }
     
     //check every input line for a library to load and if one is found, try to load it
-    while(fgets(plugin_chars, 255, plugin_config)) {
+    while(fgets(plugin_chars, maxChars, plugin_config)) {
         plugin_path = plugin_chars;
         // strip whitespaces from start and end of line
         size_t pos1 = plugin_path.find_first_not_of(" \t\n\r");

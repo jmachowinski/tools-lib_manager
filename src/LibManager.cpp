@@ -90,8 +90,8 @@ LibManager::~LibManager() {
 }
 
 /**
-    * Empties the libMap field and deletes all items (libStructs) from memory.
-    */
+* Empties the libMap field and deletes all items (libStructs) from memory.
+*/
 void LibManager::clearLibraries() {
     std::map<std::string, libStruct>::iterator it;
     bool finished = false;
@@ -113,13 +113,12 @@ void LibManager::clearLibraries() {
 }
 
 /**
-    * Registers a new library. An associated libStruct is created and all other
-    * registered libraries are informed about the new library by calling the
-    * newLibLoaded() method of their interface.
-    * 
-    * @param _lib A pointer to any class implementing the LibInterface.
-    */
-void LibManager::addLibrary(LibInterface *_lib) {
+* Registers a new library. An associated libStruct is created and all other
+* registered libraries are informed about the new library by calling the
+* newLibLoaded() method of their interface.
+* 
+* @param _lib A pointer to any class implementing the LibInterface.
+*/
     if(!_lib) {
         return;
     }
@@ -146,15 +145,16 @@ void LibManager::addLibrary(LibInterface *_lib) {
 }
 
 /**
-    * Loads a library from a specified path from the hard drive. This function
-    * can be used to load a library (or plugin) through the LibManager at runtime
-    * rather than adding an already-existing instance with the addLibrary method.
-    * @param libPath The path to the library.
-    * @param config 
-    * @return 
-    */
+* Loads a library from a specified path from the hard drive. This function
+* can be used to load a library (or plugin) through the LibManager at runtime
+* rather than adding an already-existing instance with the addLibrary method.
+* @param libPath The path to the library.
+* @param config 
+* @return 
+*/
 LibManager::ErrorNumber LibManager::loadLibrary(const string &libPath, 
-                                                void *config) {
+                                                void *config) 
+{
     const char *prefix = "lib";
 #ifdef WIN32
     const char *suffix = ".dll";
@@ -256,14 +256,15 @@ LibManager::ErrorNumber LibManager::loadLibrary(const string &libPath,
 }
                                                 
 /**
-    * Returns a pointer to the libStruct associated with the requested library.
-    * @param libName The name of the requested library.
-    * @return A libStruct* if library is registered, otherwise 0.
-    */
-LibInterface* LibManager::acquireLibrary(const string &libName) {
+* Returns a pointer to the libStruct associated with the requested library.
+* @param libName The name of the requested library.
+* @return A libStruct* if library is registered, otherwise 0.
+*/
+LibInterface* LibManager::acquireLibrary(const string &libName) 
+{
     if(libMap.find(libName) == libMap.end()) {
-    fprintf(stderr, "LibManager: could not find \"%s\"\n", libName.c_str());
-    return 0;
+        fprintf(stderr, "LibManager: could not find \"%s\"\n", libName.c_str());
+        return NULL;
     }
     libStruct *theLib = &(libMap[libName]);
     theLib->useCount++;
@@ -362,7 +363,8 @@ void LibManager::loadConfigFile(const std::string &config_file)
  * all registered libraries.
  * @param libList
  */
-void LibManager::getAllLibraries(std::list<LibInterface*> *libList) {
+void LibManager::getAllLibraries(std::list<LibInterface*> *libList) 
+{
     std::map<std::string, libStruct>::iterator it;
     for(it = libMap.begin(); it != libMap.end(); ++it) {
         it->second.useCount++;
@@ -374,7 +376,8 @@ void LibManager::getAllLibraries(std::list<LibInterface*> *libList) {
  * Accepts a pointer to a string list and appends the names of the registered libraries.
  * @param libNameList A pointer to a list of strings.
  */
-void LibManager::getAllLibraryNames(std::list<std::string> *libNameList) const {
+void LibManager::getAllLibraryNames(std::list<std::string> *libNameList) const 
+{
     std::map<std::string, libStruct>::const_iterator it;
     for(it = libMap.begin(); it != libMap.end(); ++it) {
         libNameList->push_back(it->first);
@@ -386,7 +389,8 @@ void LibManager::getAllLibraryNames(std::list<std::string> *libNameList) const {
  * @param libName
  * @return 
  */
-LibInfo LibManager::getLibraryInfo(const std::string &libName) const {
+LibInfo LibManager::getLibraryInfo(const std::string &libName) const 
+{
     LibInfo info;
     std::map<std::string, libStruct>::const_iterator it;
     it = libMap.find(libName);
@@ -406,7 +410,8 @@ LibInfo LibManager::getLibraryInfo(const std::string &libName) const {
  * Writes the names, source and revision of all registered libraries to the specified file.
  * @param filepath The path of the file where the names should be dumped.
  */
-void LibManager::dumpTo(const std::string &filepath) const {
+void LibManager::dumpTo(const std::string &filepath) const 
+{
     std::list<std::string> libNames;
     std::list<std::string>::const_iterator libNamesIt;
     getAllLibraryNames(&libNames);
@@ -443,7 +448,8 @@ void LibManager::dumpTo(const std::string &filepath) const {
     // Helper Functions
     ////////////////////
 
-static std::string getErrorStr() {
+static std::string getErrorStr() 
+{
     string errorMsg;
 #ifdef WIN32
     LPTSTR lpErrorText = NULL;
@@ -459,7 +465,8 @@ static std::string getErrorStr() {
     return errorMsg;
 }
 
-static LibHandle intern_loadLib(const std::string &libPath) {
+static LibHandle intern_loadLib(const std::string &libPath) 
+{
     LibHandle libHandle;
 #ifdef WIN32
     libHandle = LoadLibrary(libPath.c_str());
@@ -475,7 +482,8 @@ static LibHandle intern_loadLib(const std::string &libPath) {
 }
 
 template <typename T>
-static T getFunc(LibHandle libHandle, const std::string &name) {
+static T getFunc(LibHandle libHandle, const std::string &name) 
+{
     T func = NULL;
 #ifdef WIN32
     func = reinterpret_cast<T>(GetProcAddress(libHandle, name.c_str()));
@@ -483,10 +491,10 @@ static T getFunc(LibHandle libHandle, const std::string &name) {
     func = reinterpret_cast<T>(dlsym(libHandle, name.c_str()));
 #endif
     if(!func) {
-    string err = getErrorStr();
-    fprintf(stderr, 
-            "ERROR: lib_manager cannot load library symbol \"%s\"\n"
-            "       %s\n", name.c_str(), err.c_str());
+        string err = getErrorStr();
+        fprintf(stderr, 
+                "ERROR: lib_manager cannot load library symbol \"%s\"\n"
+                "       %s\n", name.c_str(), err.c_str());
     }
     return func;
 }

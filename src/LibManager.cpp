@@ -37,6 +37,7 @@
 
 #include <cstdio>
 #include <stdlib.h>
+#include <stdexcept>
 
 namespace lib_manager {
 

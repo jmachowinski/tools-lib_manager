@@ -284,7 +284,7 @@ LibManager::ErrorNumber LibManager::releaseLibrary(const string &libName)
     {
         throw std::runtime_error("Internal error, use count is below zero !");
     }
-    if(theLib->useCount == 0 && !theLib->wasUnloaded) {
+    if(theLib->useCount == 0) {
         unloadLibrary(libName);
     }
     return LIBMGR_NO_ERROR;
@@ -305,7 +305,6 @@ LibManager::ErrorNumber LibManager::unloadLibrary(const string &libName)
         throw std::runtime_error("Internal error, use count is below zero !");
     }
     if(theLib->useCount == 0) {
-        theLib->wasUnloaded = true;
         fprintf(stderr, "LibManager: unload delete [%s]\n", libName.c_str());
         if(theLib->destroy) {
             theLib->destroy(theLib->libInterface);

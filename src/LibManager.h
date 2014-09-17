@@ -39,17 +39,16 @@
 namespace lib_manager {
     
     struct libStruct {
-        libStruct() :libInterface(NULL), destroy(NULL), useCount(0), wasUnloaded(false)
+        libStruct() :libInterface(NULL), destroy(NULL), useCount(0)
         {
         };
 
-        libStruct(LibInterface *i) : libInterface(i), destroy(NULL), useCount(1), wasUnloaded(false)
+        libStruct(LibInterface *i) : libInterface(i), destroy(NULL), useCount(1)
         {}; 
         
         LibInterface *libInterface;
         destroyLib *destroy;
         int useCount;
-        bool wasUnloaded;
         std::string path;
     };
     

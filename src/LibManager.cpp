@@ -214,50 +214,39 @@ LibManager::ErrorNumber LibManager::loadLibrary(const string &libPath,
     }
     
     
-    libStruct newLib;
-    newLib.destroy = 0;
-    newLib.libInterface = 0;
-    newLib.useCount = 0;
-    newLib.wasUnloaded = false;
-    newLib.path = filepath;
-    
+    LibInterface *interface = NULL;
+    destroyLib *destroyFunc = NULL;
     
     LibHandle pl = intern_loadLib(filepath);
     
     if(pl) {
-        newLib.destroy = getFunc<destroyLib*>(pl, "destroy_c");
-        if(newLib.destroy) {
+        destroyFunc = getFunc<destroyLib*>(pl, "destroy_c");
+        if(destroyFunc) {
             if(!config) {
                 createLib *tmp_con = getFunc<createLib*>(pl, "create_c");
                 if(tmp_con)
-                    newLib.libInterface = tmp_con(this);
+                {
+                    interface = tmp_con(this);
+                }
             } else {
                 createLib2 *tmp_con2 = getFunc<createLib2*>(pl, "config_create_c");
                 if(tmp_con2)
-                    newLib.libInterface = tmp_con2(this, config);
+                {
+                    interface = tmp_con2(this, config);
+                }
             }
         }
     }
-    
-    if(!newLib.libInterface)
+
+    if(!interface)
         return LIBMGR_ERR_NOT_ABLE_TO_LOAD;
-    
-    string name = newLib.libInterface->getLibName();
-    
-    if(libMap.find(name) != libMap.end()) {
-        newLib.destroy(newLib.libInterface);
-        return LIBMGR_ERR_LIBNAME_EXISTS;
-    }
-    
-    libMap[name] = newLib;
-    // notify all Libs of newly loaded lib
-    for(map<string, libStruct>::iterator it = libMap.begin();
-        it != libMap.end(); ++it) 
+
+    LibManager::ErrorNumber error = addLibrary(interface, destroyFunc, libPath);
+    if(error != LIBMGR_NO_ERROR)
     {
-        // not notify the new lib about itself
-        if(it->first != name)
-            it->second.libInterface->newLibLoaded(name);
+        destroyFunc(interface);
     }
+    
     return LIBMGR_NO_ERROR;
 }
                                                 

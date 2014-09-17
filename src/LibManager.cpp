@@ -62,11 +62,11 @@ static T getFunc(LibHandle libHandle, const string &name);
 
 
 LibManager::LibManager() {
-    errMessage[0] = "no error";
-    errMessage[1] = "no library with given name loaded";
-    errMessage[2] = "library name already exists";
-    errMessage[3] = "not able to load library";  
-    errMessage[4] = "library is still in use";  
+    errMessage[LIBMGR_NO_ERROR] = "no error";
+    errMessage[LIBMGR_ERR_NO_LIBRARY] = "no library with given name loaded";
+    errMessage[LIBMGR_ERR_LIBNAME_EXISTS] = "library name already exists";
+    errMessage[LIBMGR_ERR_NOT_ABLE_TO_LOAD] = "not able to load library";  
+    errMessage[LIBMGR_ERR_LIB_IN_USE] = "library is still in use";  
 }
 
 LibManager::~LibManager() {

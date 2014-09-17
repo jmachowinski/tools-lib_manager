@@ -119,16 +119,16 @@ void LibManager::clearLibraries() {
 * 
 * @param _lib A pointer to any class implementing the LibInterface.
 */
+LibManager::ErrorNumber LibManager::addLibrary(LibInterface *_lib, destroyLib *destroyFunc,const std::string &path) {
     if(!_lib) {
-        return;
+        return lib_manager::LibManager::LIBMGR_ERR_NO_LIBRARY;
     }
-    libStruct newLib;
+    libStruct newLib(_lib);
+    newLib.destroy = destroyFunc;
+    newLib.path = path;
+    
     string name = _lib->getLibName();
     
-    newLib.destroy = 0;
-    newLib.libInterface = _lib;
-    newLib.useCount = 1;
-    newLib.wasUnloaded = false;
     _lib->createModuleInfo();
     
     if(libMap.find(name) == libMap.end()) {
@@ -142,6 +142,12 @@ void LibManager::clearLibraries() {
                 it->second.libInterface->newLibLoaded(name);
             }
     }
+    else
+    {
+        return LIBMGR_ERR_LIBNAME_EXISTS;
+    }
+    
+    return LIBMGR_NO_ERROR;
 }
 
 /**

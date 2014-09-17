@@ -79,7 +79,7 @@ namespace lib_manager {
         LibManager();
         ~LibManager();
         
-        void addLibrary(LibInterface *_lib);
+        ErrorNumber addLibrary(LibInterface *_lib, destroyLib *destroyFunc = NULL,const std::string &path = std::string());
         ErrorNumber loadLibrary(const std::string &libPath,
                                 void *config = NULL);
         
